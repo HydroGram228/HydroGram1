@@ -14,10 +14,15 @@ public class HydroConfig {
     private static final String PREFS_NAME = "hydro_config";
     private static SharedPreferences preferences;
 
-    public static int currentSeason = THEME_OCEAN; // По умолчанию Океан
+    public static int currentSeason = THEME_OCEAN;
     public static boolean enableParticles = true;
     public static boolean enableAvatarFrames = true;
     public static boolean enableEasterEggs = true;
+
+    // 🕵️ Новые функции удобства
+    public static boolean incognitoMetroMode = false; // Режим Инкогнито (блюр в метро)
+    public static boolean cleanLinksEnabled = true;   // Очистка ссылок от мусора
+    public static boolean peekPreviewEnabled = true;  // Быстрый предпросмотр фото по удержанию
 
     public static void loadConfig() {
         if (ApplicationLoader.applicationContext == null) return;
@@ -26,6 +31,16 @@ public class HydroConfig {
         enableParticles = preferences.getBoolean("particles", true);
         enableAvatarFrames = preferences.getBoolean("avatar_frames", true);
         enableEasterEggs = preferences.getBoolean("easter_eggs", true);
+        incognitoMetroMode = preferences.getBoolean("incognito_metro", false);
+        cleanLinksEnabled = preferences.getBoolean("clean_links", true);
+        peekPreviewEnabled = preferences.getBoolean("peek_preview", true);
+    }
+
+    public static void toggleIncognitoMetro() {
+        incognitoMetroMode = !incognitoMetroMode;
+        if (preferences != null) {
+            preferences.edit().putBoolean("incognito_metro", incognitoMetroMode).apply();
+        }
     }
 
     public static void setSeason(int season) {
