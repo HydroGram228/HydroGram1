@@ -1,0 +1,46 @@
+name: Build HydroGram APK
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Compile HydroGram APK
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          fetch-depth: 1
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Create mock google-services.json
+        run: |
+          mkdir -p TMessagesProj
+          if [ ! -f "TMessagesProj/google-services.json" ]; then
+            echo '{"project_info":{"project_number":"123","project_id":"hydrogram"},"client":[{"client_info":{"mobilesdk_app_id":"1:123:android:123","android_client_info":{"package_name":"org.telegram.messenger"}},"api_key":[{"current_key":"dummy"}]}]}' > TMessagesProj/google-services.json
+          fi
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Build Afat APK
+        run: ./gradlew assembleAfatDebug --no-daemon
+
+      - name: Upload HydroGram APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: HydroGram-APK
+          path: |
+            TMessagesProj/build/outputs/apk/**/*.apk
+            **/build/outputs/apk/**/*.apk
